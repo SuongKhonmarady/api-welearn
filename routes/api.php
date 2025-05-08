@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CountryController;
 use App\Http\Controllers\ExamDateController;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\QuestionController;
@@ -14,6 +15,10 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OpenAIController;
+
+
+
 
 // Current User Route
 Route::middleware(['auth:sanctum'])->get('/currentUser', function (Request $request) {
@@ -38,7 +43,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::delete('question/{question}', [QuestionController::class, 'destroy']);
 
     Route::post('scholarship', [ScholarshipController::class, 'store']);
-    Route::put('scholarship/{scholarship}', [ScholarshipController::class, 'update']);
+    Route::put('scholarship/{scholarship}', [ScholarshipController::class, 'updateScholarship']);
     Route::delete('scholarship/{scholarship}', [ScholarshipController::class, 'destroy']);
 
     Route::post('type', [TypeController::class, 'store']);
@@ -60,9 +65,14 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::post('category', [CategoryController::class, 'store']);
     Route::put('category/{category}', [CategoryController::class, 'update']);
     Route::delete('category/{category}', [CategoryController::class, 'destroy']);
+
+    Route::post('countries', [CountryController::class, 'store']);
+    Route::put('countries/{id}', [CountryController::class, 'update']);
+    Route::delete('countries/{id}', [CountryController::class, 'destroy']);
 });
 
 // Public Routes
+Route::post('/chat-scholarship', [OpenAIController::class, 'chatRecommend']);
 Route::get('level', [LevelController::class, 'index']);
 Route::get('category', [CategoryController::class, 'index']);
 Route::get('examDate', [ExamDateController::class, 'index']);
@@ -70,3 +80,6 @@ Route::get('type/{id}', [TypeController::class, 'show']);
 Route::get('scholarship', [ScholarshipController::class, 'index']);
 Route::get('pdf/{examdate_id}/{category_id}', [SubjectController::class, 'showPdf']);
 Route::get('rank/{category_id}/{isGraduate}', [RankController::class, 'show']);
+Route::get('scholarship/upcoming', [ScholarshipController::class, 'upcomingScholarships']);
+Route::get('countries', [CountryController::class, 'index']);
+Route::get('countries/{id}', [CountryController::class, 'scholarships']);

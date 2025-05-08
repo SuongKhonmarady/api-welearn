@@ -21,22 +21,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = User::find(Auth::id()); 
-
-        // Generate a unique token
-        $token = Str::random(60); 
-
-        // Update the user's token in the database
-        // $user->api_token = Hash::make($token);
-        $user->api_token =$token; 
-        $user->save();
+        // $user = User::find(Auth::id()); 
 
         // Return no content and set the token in the response headers
-        return response()->noContent()->header('Authorization', 'token ' . $token );
-        // return response()->json([
-        //     'user' => $user,
-        //     'token' => $token 
-        // ]); 
+        return response()->noContent();
+       
     }
 
     /**

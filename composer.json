@@ -9,6 +9,9 @@
         "cloudinary-labs/cloudinary-laravel": "^2.2",
         "dedoc/scramble": "^0.10.4",
         "doctrine/dbal": "^4.0",
+        "facebook/graph-sdk": "^5.1",
+        "fruitcake/php-cors": "^1.3",
+        "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"
