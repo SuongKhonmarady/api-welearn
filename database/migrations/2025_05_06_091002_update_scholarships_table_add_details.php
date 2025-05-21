@@ -11,16 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('scholarships', function (Blueprint $table) {
+        Schema::create('scholarships', function (Blueprint $table) {
+            $table->id();
+            $table->string('link');
+            $table->date('post_at');
+            $table->date('deadline')->nullable();
             $table->string('title')->nullable();
+            $table->text('description')->nullable();
             $table->string('official_link')->nullable();
             $table->text('eligibility')->nullable();
             $table->string('host_country')->nullable();
             $table->string('host_university')->nullable();
             $table->string('program_duration')->nullable();
             $table->string('degree_offered')->nullable();
+            $table->timestamps();
         });
-        
     }
 
     /**
@@ -28,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('scholarships');
     }
 };
