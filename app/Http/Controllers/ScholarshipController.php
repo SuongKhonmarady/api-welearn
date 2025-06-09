@@ -14,6 +14,24 @@ class ScholarshipController extends BaseController
         $scholarships = Scholarship::orderByDesc('post_at')->get();
         return $this->sendSuccess($scholarships, "fetch scolarship list");
     }
+
+    /**
+     * Display the specified scholarship.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $scholarship = Scholarship::find($id);
+        
+        if (!$scholarship) {
+            return $this->sendError("Scholarship not found", [], 404);
+        }
+        
+        return $this->sendSuccess($scholarship, "Scholarship details fetched successfully");
+    }
+
     public function store(ScholarshipRequest $request)
     {
 
@@ -24,8 +42,23 @@ class ScholarshipController extends BaseController
     public function upcomingScholarships()
     {
         $currentDate = now();
-        $scholarships = Scholarship::where('deadline', '>', $currentDate)->orderBy('deadline')->get();
-        return $this->sendSuccess($scholarships, "Fetched scholarships with upcoming deadlines");
+        
+        // First, try to get scholarships with actual upcoming deadlines
+        $scholarships = Scholarship::whereNotNull('deadline')
+            ->where('deadline', '>', $currentDate)
+            ->orderBy('deadline', 'asc')
+            ->get();
+        
+        if ($scholarships->isNotEmpty()) {
+            return $this->sendSuccess($scholarships, "Fetched scholarships with upcoming deadlines");
+        }
+        
+        // If no scholarships with valid upcoming deadlines, return recent ones
+        $recentScholarships = Scholarship::orderBy('post_at', 'desc')
+            ->take(10)
+            ->get();
+            
+        return $this->sendSuccess($recentScholarships, "No upcoming deadlines found. Showing recent scholarships");
     }
     public function updateScholarship(ScholarshipRequest $request, Scholarship $scholarship)
     {

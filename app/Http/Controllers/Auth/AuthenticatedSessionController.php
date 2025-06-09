@@ -21,11 +21,72 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // $user = User::find(Auth::id()); 
+        $user = Auth::user();
 
-        // Return no content and set the token in the response headers
-        return response()->noContent();
-       
+        // Return user data for SPA
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'is_admin' => $user->is_admin,
+                'is_graduate' => $user->is_graduate,
+            ],
+            'message' => 'Login successful'
+        ]);
+    }
+
+    /**
+     * Handle token-based authentication without CSRF protection.
+     * This method creates a Sanctum token instead of using session authentication.
+     */
+    public function tokenLogin(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        // Find the user
+        $user = User::where('email', $request->email)->first();
+
+        // Check if user exists and password is correct
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'The provided credentials are incorrect.'
+            ], 401);
+        }
+
+        // Create a Sanctum token for the user
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        // Return user data and token
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'is_admin' => $user->is_admin,
+                'is_graduate' => $user->is_graduate,
+            ],
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'message' => 'Login successful'
+        ]);
+    }
+
+    /**
+     * Revoke the current token (logout for token-based auth).
+     */
+    public function tokenLogout(Request $request)
+    {
+        // Delete the current access token
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Token revoked successfully'
+        ]);
     }
 
     /**
