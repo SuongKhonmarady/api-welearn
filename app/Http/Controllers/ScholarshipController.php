@@ -9,10 +9,24 @@ use Illuminate\Http\Request;
 
 class ScholarshipController extends BaseController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $scholarships = Scholarship::orderByDesc('post_at')->get();
-        return $this->sendSuccess($scholarships, "fetch scolarship list");
+        $query = Scholarship::query();
+        
+        // Apply ordering
+        $sortBy = $request->get('sort', 'post_at');
+        $order = $request->get('order', 'desc');
+        $query->orderBy($sortBy, $order);
+        
+        // Apply limit if specified
+        if ($request->has('limit')) {
+            $limit = min($request->get('limit'), 100); // Cap at 100 to prevent abuse
+            $scholarships = $query->take($limit)->get();
+        } else {
+            $scholarships = $query->get();
+        }
+        
+        return $this->sendSuccess($scholarships, "fetch scholarship list");
     }
 
     /**
@@ -156,6 +170,10 @@ class ScholarshipController extends BaseController
     {
         $query = Scholarship::query();
 
+        if ($request->has('title')) {
+            $query->where('title', 'LIKE', '%' . $request->title . '%');
+        }
+
         if ($request->has('degree')) {
             $query->where('degree_offered', 'LIKE', '%' . $request->degree . '%');
         }
@@ -175,5 +193,24 @@ class ScholarshipController extends BaseController
         }
 
         return $this->sendSuccess($scholarships, "Fetched filtered scholarships successfully");
+    }
+
+    public function searchByTitle(Request $request)
+    {
+        $title = $request->input('title');
+        
+        if (!$title) {
+            return $this->sendError("Title parameter is required for search.");
+        }
+
+        $scholarships = Scholarship::where('title', 'LIKE', '%' . $title . '%')
+            ->orderBy('post_at', 'desc')
+            ->get();
+
+        if ($scholarships->isEmpty()) {
+            return $this->sendError("No scholarships found with the specified title.");
+        }
+
+        return $this->sendSuccess($scholarships, "Fetched scholarships matching title '{$title}' successfully");
     }
 }

@@ -115,6 +115,7 @@ Route::get('scholarship/region/{region}', [ScholarshipController::class, 'filter
 Route::get('scholarship/degree/{degree}', [ScholarshipController::class, 'filterByDegree']);
 Route::get('scholarship/country/{country}', [ScholarshipController::class, 'filterByCountry']);
 Route::get('scholarship/search', [ScholarshipController::class, 'search']);
+Route::get('scholarship/search-by-title', [ScholarshipController::class, 'searchByTitle']);
 Route::get('scholarship/{id}', [ScholarshipController::class, 'show']);
 Route::get('pdf/{examdate_id}/{category_id}', [SubjectController::class, 'showPdf']);
 Route::get('rank/{category_id}/{isGraduate}', [RankController::class, 'show']);
