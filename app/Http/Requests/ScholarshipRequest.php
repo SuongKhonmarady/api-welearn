@@ -25,7 +25,6 @@ class ScholarshipRequest extends FormRequest
             'description' => 'required|string',
             'post_at' => 'required',
             'link' => 'required|string',
-            'deadline' => 'required|date|after:today',
         ];
     }
 }
