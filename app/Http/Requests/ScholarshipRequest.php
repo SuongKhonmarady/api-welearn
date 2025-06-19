@@ -24,7 +24,7 @@ class ScholarshipRequest extends FormRequest
         return [
             'title' => 'sometimes|string|max:255',
             'description' => 'required|string',
-            'link' => 'required|string|max:255',
+            'link' => 'sometimes|nullable|string|max:255',
             'official_link' => 'sometimes|nullable|string|max:255',
             'post_at' => 'required|date',
             'deadline' => 'sometimes|nullable|date',
