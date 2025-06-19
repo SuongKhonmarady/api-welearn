@@ -22,9 +22,17 @@ class ScholarshipRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'title' => 'sometimes|string|max:255',
             'description' => 'required|string',
-            'post_at' => 'required',
-            'link' => 'required|string',
+            'link' => 'required|string|max:255',
+            'official_link' => 'sometimes|nullable|string|max:255',
+            'post_at' => 'required|date',
+            'deadline' => 'sometimes|nullable|date',
+            'eligibility' => 'sometimes|nullable|string',
+            'host_country' => 'sometimes|nullable|string|max:255',
+            'host_university' => 'sometimes|nullable|string|max:255',
+            'program_duration' => 'sometimes|nullable|string|max:255',
+            'degree_offered' => 'sometimes|nullable|string|max:255',
         ];
     }
 }
