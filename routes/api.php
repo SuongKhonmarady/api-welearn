@@ -116,7 +116,8 @@ Route::get('scholarship/degree/{degree}', [ScholarshipController::class, 'filter
 Route::get('scholarship/country/{country}', [ScholarshipController::class, 'filterByCountry']);
 Route::get('scholarship/search', [ScholarshipController::class, 'search']);
 Route::get('scholarship/search-by-title', [ScholarshipController::class, 'searchByTitle']);
-Route::get('scholarship/{id}', [ScholarshipController::class, 'show']);
+Route::get('scholarship/{slug}', [ScholarshipController::class, 'showBySlug'])->where('slug', '[a-z0-9-]+');
+Route::get('scholarship/{id}', [ScholarshipController::class, 'show'])->where('id', '[0-9]+');
 Route::get('pdf/{examdate_id}/{category_id}', [SubjectController::class, 'showPdf']);
 Route::get('rank/{category_id}/{isGraduate}', [RankController::class, 'show']);
 Route::get('countries', [CountryController::class, 'index']);
@@ -149,4 +150,10 @@ Route::get('/debug-auth', function (Request $request) {
         ],
         'session_data' => session()->all(),
     ]);
+});
+
+// Test routes for slug functionality
+Route::get('/test-slugs', function () {
+    $scholarships = \App\Models\Scholarship::select('id', 'title', 'slug')->take(5)->get();
+    return response()->json($scholarships);
 });

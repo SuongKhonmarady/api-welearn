@@ -26,22 +26,48 @@ class ScholarshipController extends BaseController
             $scholarships = $query->get();
         }
         
+        // Add URLs to each scholarship
+        $scholarships->each(function ($scholarship) {
+            $scholarship->url = $scholarship->url;
+            $scholarship->api_url = $scholarship->api_url;
+        });
+        
         return $this->sendSuccess($scholarships, "fetch scholarship list");
     }
 
     /**
      * Display the specified scholarship.
      *
-     * @param  int  $id
+     * @param  string  $identifier (can be ID or slug)
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($identifier)
     {
-        $scholarship = Scholarship::find($id);
+        try {
+            $scholarship = Scholarship::findBySlugOrId($identifier);
+            return $this->sendSuccess($scholarship, "Scholarship details fetched successfully");
+        } catch (\Exception $e) {
+            return $this->sendError("Scholarship not found", [], 404);
+        }
+    }
+
+    /**
+     * Display the specified scholarship by slug only.
+     *
+     * @param  string  $slug
+     * @return \Illuminate\Http\Response
+     */
+    public function showBySlug($slug)
+    {
+        $scholarship = Scholarship::where('slug', $slug)->first();
         
         if (!$scholarship) {
             return $this->sendError("Scholarship not found", [], 404);
         }
+        
+        // Add URLs to the scholarship
+        $scholarship->url = $scholarship->url;
+        $scholarship->api_url = $scholarship->api_url;
         
         return $this->sendSuccess($scholarship, "Scholarship details fetched successfully");
     }
